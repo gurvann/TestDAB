@@ -14,7 +14,11 @@ const ENDPOINTS: Endpoint[] = [
   { id: 'genre', label: 'Genres', url: 'http://localhost:5001/api/Genre' },
 ]
 
-export default function ButtonGroup() {
+export default function ButtonGroup({
+  onFetch,
+}: {
+  onFetch?: (data: any) => void
+}) {
   const [activeEndpoint, setActiveEndpoint] = useState<Endpoint | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
@@ -31,6 +35,9 @@ export default function ButtonGroup() {
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
       const data = await response.json()
       setJsonData(data)
+      if (onFetch) {
+        onFetch(data)
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
