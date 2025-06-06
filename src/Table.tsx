@@ -4,8 +4,10 @@ interface JsonData {
   [key: string]: any
 }
 
-export default function Table({ data }: { data: JsonData[] }) {
-  if (!data || data.length === 0) {
+export default function Table({ data }: { data: JsonData | JsonData[] | null }) {
+  const rows: JsonData[] = Array.isArray(data) ? data : data ? [data] : []
+
+  if (rows.length === 0) {
     return (
       <div className="text-center py-8 text-gray-500">
         <p>No data available. Please select an endpoint from the button group above.</p>
@@ -14,7 +16,7 @@ export default function Table({ data }: { data: JsonData[] }) {
   }
 
   // Extract column headers from the first item
-  const columns = Object.keys(data[0] || {})
+  const columns = Object.keys(rows[0] || {})
   
   return (
     <div className="overflow-x-auto">
@@ -32,7 +34,7 @@ export default function Table({ data }: { data: JsonData[] }) {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {data.map((row: JsonData, rowIndex: number) => (
+          {rows.map((row: JsonData, rowIndex: number) => (
             <tr 
               key={rowIndex} 
               className={rowIndex % 2 === 0 ? 'bg-gray-50' : 'bg-white'}

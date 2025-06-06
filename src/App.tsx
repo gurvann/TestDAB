@@ -13,7 +13,7 @@ export default function App() {
         </h1>
         
         <ButtonGroup onFetch={setJsonData} />
-        <Table data={jsonData || []} />
+        <Table data={jsonData} />
       </div>
     </div>
   )

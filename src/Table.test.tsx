@@ -12,4 +12,10 @@ describe('Table', () => {
       )
     ).toBeInTheDocument()
   })
+
+  it('renders table rows when data is an object', () => {
+    const obj = { id: 1, name: 'Alice' }
+    render(<Table data={obj} />)
+    expect(screen.getByText('Alice')).toBeInTheDocument()
+  })
 })
