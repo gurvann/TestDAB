@@ -18,4 +18,10 @@ describe('Table', () => {
     render(<Table data={obj} />)
     expect(screen.getByText('Alice')).toBeInTheDocument()
   })
+
+  it("renders when data contains a 'value' array", () => {
+    const obj = { value: [{ id: 1, name: 'Alice' }] }
+    render(<Table data={obj} />)
+    expect(screen.getByText('Alice')).toBeInTheDocument()
+  })
 })

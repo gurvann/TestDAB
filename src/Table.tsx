@@ -4,8 +4,29 @@ interface JsonData {
   [key: string]: any
 }
 
-export default function Table({ data }: { data: JsonData | JsonData[] | null }) {
-  const rows: JsonData[] = Array.isArray(data) ? data : data ? [data] : []
+interface Column {
+  key: string
+  label?: string
+}
+
+export default function Table({
+  data,
+  columns,
+}: {
+  data: JsonData | JsonData[] | null
+  columns?: Column[]
+}) {
+  let rows: JsonData[] = []
+
+  if (Array.isArray(data)) {
+    rows = data
+  } else if (data) {
+    if (Array.isArray((data as any).value)) {
+      rows = (data as any).value
+    } else {
+      rows = [data]
+    }
+  }
 
   if (rows.length === 0) {
     return (
@@ -15,33 +36,35 @@ export default function Table({ data }: { data: JsonData | JsonData[] | null }) 
     )
   }
 
-  // Extract column headers from the first item
-  const columns = Object.keys(rows[0] || {})
+  // Determine column order
+  const headerKeys = columns ? columns.map((c) => c.key) : Object.keys(rows[0] || {})
   
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white border border-gray-200">
         <thead className="bg-gray-50">
           <tr>
-            {columns.map((column) => (
-              <th 
-                key={column} 
+            {headerKeys.map((column) => (
+              <th
+                key={column}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                {column.charAt(0).toUpperCase() + column.slice(1)}
+                {columns
+                  ? columns.find((c) => c.key === column)?.label || column
+                  : column.charAt(0).toUpperCase() + column.slice(1)}
               </th>
             ))}
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {rows.map((row: JsonData, rowIndex: number) => (
-            <tr 
-              key={rowIndex} 
+            <tr
+              key={rowIndex}
               className={rowIndex % 2 === 0 ? 'bg-gray-50' : 'bg-white'}
             >
-              {columns.map((column) => (
-                <td 
-                  key={column} 
+              {headerKeys.map((column) => (
+                <td
+                  key={column}
                   className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
                 >
                   {typeof row[column] === 'object' && row[column] !== null ? (
